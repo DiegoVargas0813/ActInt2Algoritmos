@@ -6,38 +6,40 @@
 #include <cmath>
 using namespace std;
 
-const int VAL_INFINITO = INT_MAX;
+const int VAL_INFINITO = INT_MAX; //Valor "infinito"
 
-// Algoritmo de Prim 
+// Algoritmo de Prim. Complejidad: O(V^2).
 vector<pair<int, int>> primMST(const vector<vector<int>>& GRAFO, int N) {
-    vector<int> pesoMin(N, VAL_INFINITO);        
-    vector<bool> enMST(N, false);   
-    vector<int> nodoAnterior(N, -1);     
-    pesoMin[0] = 0;                     
+    vector<int> pesoMin(N, VAL_INFINITO); //Vector de pesos minimos        
+    vector<bool> enMST(N, false);    //Vector de nodos visitados
+    vector<int> nodoAnterior(N, -1);     //Vector de padres
+    
+    //Nodo raiz
+    pesoMin[0] = 0;               
     nodoAnterior[0] = -1;              
 
-    for (int count = 0; count < N - 1; ++count) {
+    for (int count = 0; count < N - 1; ++count) { //Recorremos todos los nodos. O(V)
         int u = -1;
 
         // Encontramos el nodo no visitado con el peso menor
         for (int i = 0; i < N; ++i) {
-            if (!enMST[i] && (u == -1 || pesoMin[i] < pesoMin[u])) {
-                u = i;
+            if (!enMST[i] && (u == -1 || pesoMin[i] < pesoMin[u])) { //Si no está en el MST y el peso es menor o es el primer nodo
+                u = i; //Actualizamos el nodo
             }
         }
 
-        enMST[u] = true;
+        enMST[u] = true; //Visitado
 
-        // Actualizamos el peso de los nodos de alado
+        // Actualizamos el peso de los nodos adjacentes
         for (int v = 0; v < N; ++v) {
-            if (GRAFO[u][v] && !enMST[v] && GRAFO[u][v] < pesoMin[v]) {
+            if (GRAFO[u][v] && !enMST[v] && GRAFO[u][v] < pesoMin[v]) { //Si no está en el MST y el peso es menor
                 pesoMin[v] = GRAFO[u][v];
                 nodoAnterior[v] = u;
             }
         }
     }
 
-    //ista de arcos para el MST
+    //Lista de arcos para el MST
     vector<pair<int, int>> rFinalMST;
     for (int i = 1; i < N; ++i) {
         rFinalMST.push_back({nodoAnterior[i], i});
@@ -160,13 +162,16 @@ int encontrarCentralMasCercana(double x, double y, const vector<pair<double, dou
 
 int main() {
     int N;
-    cout << "Ingresa el número de colonias: ";
+    cout << "Ingresa el numero de colonias: ";
     cin >> N;
 
     vector<vector<int>> GRAFO(N, vector<int>(N));
     cout << "Ingresa la matriz de distancias entre las colonias:\n";
     for (int i = 0; i < N; ++i) {
+        cout << "Colonia " << char('A' + i) << ":\n";
+
         for (int j = 0; j < N; ++j) {
+            cout << "Distancia de " << char('A' + i) << " a " << char('A' + j) << ": ";
             cin >> GRAFO[i][j];
         }
     }
@@ -180,6 +185,7 @@ int main() {
         }
     }
 
+
     //coordenadas de las centrales
     vector<pair<double, double>> centrales(N);
     cout << "Ingresa las coordenadas de las centrales (x, y):\n";
@@ -189,7 +195,7 @@ int main() {
 
     //MST usando el algoritmo de Prim
     vector<pair<int, int>> rFinalMST = primMST(GRAFO, N);
-
+    
     //lista de arcos que forman el MST
     cout << "\nCableado óptimo entre colonias:\n";
     for (const auto& edge : rFinalMST) {
@@ -207,17 +213,17 @@ int main() {
     reconstructRoute(0, 1, N, GRAFO, dpTabla, path);
 
     // Mostramos la ruta óptima
-    cout << "\nRuta óptima para distribución:\n";
+    cout << "\nRuta optima para distribucion:\n";
     for (int i = 0; i < path.size(); ++i) {
         cout << char('A' + path[i]) << " -> ";
     }
     cout << "A" << endl; 
-    cout << "Costo mínimo de la ruta: " << minPathCost << endl;
+    cout << "Costo minimo de la ruta: " << minPathCost << endl;
 
     // Calculamos el flujo máximo entre la colonia 0 (inicio) y la colonia N-1 (final)
     int maxFlujo = fordFulkerson(capacidad, N, 0, N - 1);
 
-    cout << "\nEl flujo máximo de información entre la colonia A (origen) y la colonia " 
+    cout << "\nEl flujo máximo de informacion entre la colonia A (origen) y la colonia " 
          << char('A' + N - 1) << " (destino) es: " << maxFlujo << endl;
 
     // Calcular la cobertura de cada central
