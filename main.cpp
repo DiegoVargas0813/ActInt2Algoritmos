@@ -47,7 +47,7 @@ vector<pair<int, int>> primMST(const vector<vector<int>>& GRAFO, int N) {
     return rFinalMST;
 }
 
-// Algoritmo Held-Karp para el TSP usando programación dinámica
+// Algoritmo Held-Karp para el TSP usando programación dinámica. Complejiad: O(2^N * N^2).
 int tsp(int posNodo, int BitMaskVisitado, int N, const vector<vector<int>>& GRAFO, vector<vector<int>>& dpTabla) {
     if (BitMaskVisitado == (1 << N) - 1) {
         return GRAFO[posNodo][0]; 
@@ -66,7 +66,7 @@ int tsp(int posNodo, int BitMaskVisitado, int N, const vector<vector<int>>& GRAF
     return dpTabla[posNodo][BitMaskVisitado] = costoMin;
 }
 
-//reconstruir la ruta óptima
+//Reconstruir la ruta óptima
 void reconstructRoute(int posNodo, int BitMaskVisitado, int N, const vector<vector<int>>& GRAFO, vector<vector<int>>& dpTabla, vector<int>& path) {
     if (BitMaskVisitado == (1 << N) - 1) {
         return;
@@ -89,7 +89,7 @@ void reconstructRoute(int posNodo, int BitMaskVisitado, int N, const vector<vect
     reconstructRoute(nextCity, BitMaskVisitado | (1 << nextCity), N, GRAFO, dpTabla, path);
 }
 
-//búsqueda en anchura 
+//Búsqueda en anchura para encontrar un camino de aumento. Complejidad: O(V^2).
 bool bfs(const vector<vector<int>>& capacidad, vector<vector<int>>& flow, vector<int>& nodoAnterior, int N, int source, int sink) {
     vector<bool> BitMaskVisitado(N, false);
     queue<int> q;
@@ -112,7 +112,7 @@ bool bfs(const vector<vector<int>>& capacidad, vector<vector<int>>& flow, vector
     return false;
 }
 
-// Algoritmo de Ford-Fulkerson para calcular el flujo máximo
+// Algoritmo de Ford-Fulkerson para calcular el flujo máximo. Complejidad: O(V * E^2).z
 int fordFulkerson(const vector<vector<int>>& capacidad, int N, int source, int sink) {
     vector<vector<int>> flow(N, vector<int>(N, 0)); 
     vector<int> nodoAnterior(N);
@@ -122,10 +122,10 @@ int fordFulkerson(const vector<vector<int>>& capacidad, int N, int source, int s
     // Mientras haya un camino de aumento
     while (bfs(capacidad, flow, nodoAnterior, N, source, sink)) {
         // Encuentra el flujo máximo posible en el camino de aumento
-        int pathFlow = VAL_INFINITO;
-        for (int v = sink; v != source; v = nodoAnterior[v]) {
-            int u = nodoAnterior[v];
-            pathFlow = min(pathFlow, capacidad[u][v] - flow[u][v]);
+        int pathFlow = VAL_INFINITO; 
+        for (int v = sink; v != source; v = nodoAnterior[v]) { //Recorremos el camino de aumento
+            int u = nodoAnterior[v]; //Nodo anterior
+            pathFlow = min(pathFlow, capacidad[u][v] - flow[u][v]); //Flujo máximo
         }
 
         // Actualiza los flujos a lo largo del camino de aumento
@@ -180,7 +180,9 @@ int main() {
     vector<vector<int>> capacidad(N, vector<int>(N));
     cout << "Ingresa la matriz de capacidades de transmisión de datos entre colonias:\n";
     for (int i = 0; i < N; ++i) {
+        cout << "Colonia " << char('A' + i) << ":\n";
         for (int j = 0; j < N; ++j) {
+            cout << "Capacidad de " << char('A' + i) << " a " << char('A' + j) << ": ";
             cin >> capacidad[i][j];
         }
     }
@@ -190,14 +192,15 @@ int main() {
     vector<pair<double, double>> centrales(N);
     cout << "Ingresa las coordenadas de las centrales (x, y):\n";
     for (int i = 0; i < N; ++i) {
+        cout << "Central " << i + 1 << ": ";
         cin >> centrales[i].first >> centrales[i].second;
     }
 
     //MST usando el algoritmo de Prim
     vector<pair<int, int>> rFinalMST = primMST(GRAFO, N);
-    
+
     //lista de arcos que forman el MST
-    cout << "\nCableado óptimo entre colonias:\n";
+    cout << "\nCableado optimo entre colonias:\n";
     for (const auto& edge : rFinalMST) {
         char u = 'A' + edge.first;
         char v = 'A' + edge.second;
@@ -223,11 +226,11 @@ int main() {
     // Calculamos el flujo máximo entre la colonia 0 (inicio) y la colonia N-1 (final)
     int maxFlujo = fordFulkerson(capacidad, N, 0, N - 1);
 
-    cout << "\nEl flujo máximo de informacion entre la colonia A (origen) y la colonia " 
+    cout << "\nEl flujo maximo de informacion entre la colonia A (origen) y la colonia " 
          << char('A' + N - 1) << " (destino) es: " << maxFlujo << endl;
 
     // Calcular la cobertura de cada central
-    cout << "\nPolígonos de cobertura:\n";
+    cout << "\nPoligonos de cobertura:\n";
     for (int i = 0; i < N; ++i) {
         cout << "Central " << i + 1 << ": ";
         for (int j = 0; j < N; ++j) {
