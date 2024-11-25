@@ -114,7 +114,7 @@ bool bfs(const vector<vector<int>>& capacidad, vector<vector<int>>& flow, vector
     return false;
 }
 
-// Algoritmo de Ford-Fulkerson para calcular el flujo máximo. Complejidad: O(V * E^2).z
+// Algoritmo de Ford-Fulkerson para calcular el flujo máximo. Complejidad: O(V * E^2).
 int fordFulkerson(const vector<vector<int>>& capacidad, int N, int source, int sink) {
     vector<vector<int>> flow(N, vector<int>(N, 0)); 
     vector<int> nodoAnterior(N);
@@ -356,7 +356,7 @@ void print_output()
 {
    // Bounding box coordinates.
    cout << "Coordenadas de la caja delimitadora X0, X1, Y0, Y1:\n";
-   cout << X0 << " "<< X1 << " " << Y0 << " " << Y1 << endl;
+   cout << "\t" << X0 << " "<< X1 << " " << Y0 << " " << Y1 << endl;
 
    // Each output segment in four-column format.
    cout << "Segmentos de salida: X0, X1, Y0, Y1\n";
@@ -364,65 +364,64 @@ void print_output()
    for (i = output.begin(); i != output.end(); i++) {
         point p0 = (*i)->start;
         point p1 = (*i)->end;
-        cout << p0.x << " " << p0.y << " " << p1.x << " " << p1.y << endl;
+        cout << "\t" << p0.x << " " << p0.y << " " << p1.x << " " << p1.y << endl;
    }
 }
 #pragma endregion
 
 
 int main() {
+    cout << "Introduzca el numero de ciudades: ";
     int N;
-    cout << "Ingresa el numero de colonias: ";
     cin >> N;
 
+    // Leer la matriz de distancias
     vector<vector<int>> GRAFO(N, vector<int>(N));
-    cout << "Ingresa la matriz de distancias entre las colonias:\n";
     for (int i = 0; i < N; ++i) {
-        cout << "Colonia " << char('A' + i) << ":\n";
-
+        cout << "Introduzca las distancias de la ciudad " << char('A' + i) << " a las demas ciudades." << endl;
         for (int j = 0; j < N; ++j) {
-            cout << "Distancia de " << char('A' + i) << " a " << char('A' + j) << ": ";
             cin >> GRAFO[i][j];
         }
     }
 
-    //Matriz de capacidades
+    // Leer la matriz de capacidades de flujo
     vector<vector<int>> capacidad(N, vector<int>(N));
-    cout << "Ingresa la matriz de capacidades de transmisión de datos entre colonias:\n";
     for (int i = 0; i < N; ++i) {
-        cout << "Colonia " << char('A' + i) << ":\n";
+        cout << "Introduzca las capacidades de flujo de la ciudad " << char('A' + i) << " a las demas ciudades." << endl;
         for (int j = 0; j < N; ++j) {
-            cout << "Capacidad de " << char('A' + i) << " a " << char('A' + j) << ": ";
             cin >> capacidad[i][j];
         }
     }
 
-
-    // Read points from input. Creditos: https://www.cs.hmc.edu/~mbrubeck/voronoi.html
+    
+    // Leer las coordenadas de las centrales
+    // Input de voronoi obtenido de: https://www.cs.hmc.edu/~mbrubeck/voronoi.html
+    //Creditos a Matt Brubeck
     point p;
+    char ignore;
     for(int i = 0; i < N; ++i) {
-        cout << "Ingresa las coordenadas de la central " << char('A' + i) << ":\n";
-        cin >> p.x >> p.y;
+        cout << "Introduzca las coordenadas de la central " << char('A' + i) << ": ";
+        cin >> ignore >> p.x >> ignore >> p.y >> ignore; // Read format (x,y)
         points.push(p);
 
-        // Keep track of bounding box size.
+        // Mantener el tamaño de la caja delimitadora
         if (p.x < X0) X0 = p.x;
         if (p.y < Y0) Y0 = p.y;
         if (p.x > X1) X1 = p.x;
         if (p.y > Y1) Y1 = p.y;
     }
-    // Add margins to the bounding box.
+    // Agregar márgenes a la caja delimitadora.
     double dx = (X1-X0+1)/5.0, dy = (Y1-Y0+1)/5.0;
     X0 -= dx;  X1 += dx;  Y0 -= dy;  Y1 += dy;
 
-    // Process the queues; select the top element with smaller x coordinate.
+    // Procesar las colas; seleccionar el elemento superior con la coordenada x más pequeña.
     while (!points.empty())
         if (!events.empty() && events.top()->x <= points.top().x)
             process_event();
         else
             process_point();
 
-    // After all points are processed, do the remaining circle events.
+    // Después de procesar todos los puntos, procesar los eventos de círculo restantes.
     while (!events.empty())
         process_event();
 
@@ -430,7 +429,9 @@ int main() {
     vector<pair<int, int>> rFinalMST = primMST(GRAFO, N);
 
     //lista de arcos que forman el MST
-    cout << "\nCableado optimo entre colonias:\n";
+
+    cout << "" << endl;
+    cout << "Cableado optimo entre colonias:" << endl;
     for (const auto& edge : rFinalMST) {
         char u = 'A' + edge.first;
         char v = 'A' + edge.second;
@@ -457,7 +458,7 @@ int main() {
     int maxFlujo = fordFulkerson(capacidad, N, 0, N - 1);
 
     cout << "\nEl flujo maximo de informacion entre la colonia A (origen) y la colonia " 
-         << char('A' + N - 1) << " (destino) es: " << maxFlujo << endl;
+         << char('A' + N - 1) << " (destino) es: " << maxFlujo << "\n" << endl;
 
          
     finish_edges(); // Clean up dangling edges.
